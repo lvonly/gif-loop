@@ -134,7 +134,7 @@ public class GifFilter {
                             readGraphicControlExtension();
                             break;
                         case 0xFF: // application extension
-                            seenAppExt = true;
+                            logger.debug("application extention");
                             out.write(code);
                             byte[] block = readBlock();
                             if (block != null) {
@@ -142,7 +142,9 @@ public class GifFilter {
                                 out.write(block);
 
                                 String app = new String(block, 0, 11);
+                                logger.debug("app={}", app);
                                 if (app.equals("NETSCAPE2.0")) {
+                                    seenAppExt = true;
                                     readNetscapeExtension();
                                 } else {
                                     skip();
@@ -190,6 +192,7 @@ public class GifFilter {
     }
 
     private void writeNetscapeExtension() throws IOException {
+        logger.debug("writeNetscapeExtension");
         out.write(0xFF);
 
         out.write(11);
@@ -208,6 +211,7 @@ public class GifFilter {
     }
 
     private void readNetscapeExtension() throws IOException {
+        logger.debug("readNetscapeExtension");
         while (true) {
             byte[] data = readBlock();
             if (data == null) {
@@ -226,7 +230,7 @@ public class GifFilter {
                 data[1] = (byte) (loopCount & 0xff);
                 data[2] = (byte) ((loopCount >> 8) & 0xff);
             }
-            System.out.println(data.length);
+            logger.debug("data length={}", data.length);
             out.write(data.length);
             out.write(data);
         }
